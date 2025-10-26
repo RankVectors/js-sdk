@@ -1,1 +1,0 @@
-# RankVectors JavaScript SDK
