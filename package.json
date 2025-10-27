@@ -1,0 +1,34 @@
+{
+  "name": "@rankvectors/sdk",
+  "version": "1.0.0",
+  "description": "Official TypeScript/JavaScript SDK for RankVectors Link Implementation API",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "prepublishOnly": "npm run build"
+  },
+  "keywords": [
+    "rankvectors",
+    "internal-linking",
+    "seo",
+    "link-building",
+    "wordpress",
+    "shopify"
+  ],
+  "author": "RankVectors",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rankvectors/sdk-typescript"
+  },
+  "devDependencies": {
+    "typescript": "^5.0.0"
+  },
+  "peerDependencies": {},
+  "files": [
+    "dist",
+    "README.md"
+  ]
+}
+
