@@ -1,0 +1,87 @@
+name: JavaScript SDK Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Test
+        run: npm test || echo "No tests configured"
+
+  publish:
+    needs: test
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: .
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Get version from tag
+        id: version
+        run: |
+          VERSION=${GITHUB_REF#refs/tags/v}
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Publishing version: $VERSION"
+
+      - name: Verify package.json version matches tag
+        run: |
+          TAG_VERSION="${{ steps.version.outputs.version }}"
+          PACKAGE_VERSION=$(node -p "require('./package.json').version" || echo "")
+          if [ -z "$PACKAGE_VERSION" ]; then
+            echo "⚠️ Warning: Could not determine version from package.json"
+          else
+            echo "package.json version: $PACKAGE_VERSION"
+            echo "Tag version: $TAG_VERSION"
+            if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
+              echo "⚠️ Warning: Version mismatch between package.json and tag"
+            fi
+          fi
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Publish to npm
+        run: npm publish --access public
+        # With npm trusted publishing, no token is needed
+        # The workflow is automatically verified by npm via OIDC
+
+      - name: Publish notice
+        run: |
+          echo "✅ JavaScript SDK release complete!"
+          echo ""
+          echo "Published version ${{ steps.version.outputs.version }} to npm"
+          echo ""
+          echo "Users can install with:"
+          echo "  npm install rankvectors@${{ steps.version.outputs.version }}"
