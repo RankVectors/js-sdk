@@ -35,6 +35,9 @@ jobs:
     defaults:
       run:
         working-directory: .
+    permissions:
+      contents: read
+      id-token: write
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -73,9 +76,9 @@ jobs:
         run: npm run build
 
       - name: Publish to npm
-        run: npm publish --access public
-        # With npm trusted publishing, no token is needed
-        # The workflow is automatically verified by npm via OIDC
+        env:
+          NPM_CONFIG_PROVENANCE: "true"
+        run: npm publish --provenance --access public
 
       - name: Publish notice
         run: |
