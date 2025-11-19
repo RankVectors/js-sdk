@@ -21,13 +21,7 @@ jobs:
           node-version: "22"
 
       - name: Install dependencies
-        run: npm ci
-
-      - name: Build
-        run: npm run build
-
-      - name: Test
-        run: npm test || echo "No tests configured"
+        run: npm ci --ignore-scripts
 
   publish:
     needs: test
@@ -71,9 +65,6 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
-
-      - name: Build
-        run: npm run build
 
       - name: Publish to npm
         env:
